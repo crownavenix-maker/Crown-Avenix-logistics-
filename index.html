@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crown Avenix Logistics</title>
+<style>
+:root{--gold:#d4af37;--dark:#101318;--panel:#1b2028;--muted:#a9b0bd;--bg:#f2f4f7}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#20242c}
+header{background:var(--dark);color:white;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-size:20px;font-weight:bold}.brand span{color:var(--gold)}
+header small{color:#c7cbd2}
+.layout{display:flex;min-height:calc(100vh - 75px)}
+nav{width:205px;background:var(--panel);padding:14px 9px;flex-shrink:0}
+nav button{display:block;width:100%;border:0;background:none;color:#e7eaf0;text-align:left;padding:13px 12px;border-radius:7px;margin:3px 0;font-size:14px;cursor:pointer}
+nav button.active,nav button:hover{background:var(--gold);color:#171717}
+main{padding:22px;width:100%;min-width:0}
+h1{margin:0 0 8px;font-size:26px}p.sub{color:#6c7481;margin-top:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:13px;margin:20px 0}
+.card,.box{background:white;padding:17px;border-radius:12px;box-shadow:0 2px 9px #0000000b}
+.card small{color:#687180}.number{font-size:27px;font-weight:bold;margin-top:10px}
+.gold{color:#a57d00}.box{margin-top:15px;overflow-x:auto}
+h2{font-size:18px;margin-top:0}
+button,.primary{cursor:pointer}
+.primary{background:#bd9825;color:#111;border:0;border-radius:7px;padding:11px 15px;font-weight:bold}
+input,select{padding:11px;border:1px solid #d7dce3;border-radius:7px;width:100%;background:white}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:540px}
+th,td{text-align:left;padding:12px;border-bottom:1px solid #e7e9ed}
+th{background:#f5f6f8}
+.badge{background:#fff0bf;padding:5px 8px;border-radius:12px;font-size:12px}
+.hidden{display:none}
+.bar{display:flex;align-items:center;gap:9px;margin:14px 0}
+.bar label{width:100px;font-size:13px}.track{background:#eceef2;border-radius:8px;flex:1;height:13px;overflow:hidden}.fill{background:var(--gold);height:100%}
+footer{text-align:center;color:#8a9099;padding:20px;font-size:12px}
+@media(max-width:650px){.layout{display:block}nav{width:100%;display:flex;overflow-x:auto;gap:5px}nav button{min-width:max-content;width:auto;padding:12px}main{padding:15px}header{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">♛ CROWN <span>AVENIX</span> LOGISTICS</div>
+<div><small>Logistics Management Platform</small></div>
+</header>
+<div class="layout">
+<nav id="nav">
+<button class="active" onclick="showPage('Dashboard',this)">▦ Dashboard</button>
+<button onclick="showPage('Shipments',this)">📦 Shipments</button>
+<button onclick="showPage('Inventory',this)">▤ Inventory</button>
+<button onclick="showPage('Fleet',this)">🚚 Fleet & Drivers</button>
+<button onclick="showPage('Customers',this)">♙ Customers</button>
+<button onclick="showPage('Finances',this)">💰 Finances</button>
+<button onclick="showPage('Tracking',this)">⌕ Track Shipment</button>
+</nav>
+<main id="main"></main>
+</div>
+<footer>Crown Avenix Logistics · Moving Business Forward</footer>
+<script>
+const keys=['Shipments','Inventory','Fleet','Customers','Finances'];
+const data={Shipments:[],Inventory:[],Fleet:[],Customers:[],Finances:[]};
+function load(){keys.forEach(k=>{try{data[k]=JSON.parse(localStorage.getItem('cal_'+k))||[]}catch{data[k]=[]}})}
+function save(k){localStorage.setItem('cal_'+k,JSON.stringify(data[k]))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function money(n){return 'UGX '+Number(n||0).toLocaleString('en-UG')}
+function showPage(page,btn){
+document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+if(btn)btn.classList.add('active');
+const m=document.getElementById('main');
+if(page==='Dashboard'){
+let delivered=data.Shipments.filter(x=>x.status==='Delivered').length;
+let revenue=data.Finances.filter(x=>x.type==='Income').reduce((a,x)=>a+Number(x.amount||0),0);
+let expenses=data.Finances.filter(x=>x.type==='Expense').reduce((a,x)=>a+Number(x.amount||0),0);
+m.innerHTML=`<h1>Business Dashboard</h1><p class="sub">Welcome to your logistics command centre.</p>
+<div class="cards">
+${[['Total Shipments',data.Shipments.length],['Delivered',delivered],['Active Vehicles',data.Fleet.length],['Customers',data.Customers.length],['Revenue',money(revenue)],['Expenses',money(expenses)]].map(x=>`<div class="card"><small>${x[0]}</small><div class="number">${x[1]}</div></div>`).join('')}
+</div>
+<div class="box"><h2>Shipment Performance</h2>
+${[['Pending',0],['In Transit',0],['Delivered',0],['Out for Delivery',0]].map(([s])=>{let n=data.Shipments.filter(x=>x.status===s).length;let pct=data.Shipments.length?100*n/data.Shipments.length:0;return `<div class="bar"><label>${s} (${n})</label><div class="track"><div class="fill" style="width:${pct}%"></div></div></div>`}).join('')}
+<p><b>Recorded profit/loss:</b> ${money(revenue-expenses)}</p></div>
+<div class="box"><h2>Recent Shipments</h2>${table('Shipments',data.Shipments.slice(-5).reverse())}</div>`;
+return}
+if(page==='Tracking'){
+m.innerHTML=`<h1>Track Your Shipment</h1><p class="sub">Enter your tracking number to look up a shipment.</p><div class="box"><div class="form"><input id="trackingNo" placeholder="e.g. CAL-123456"><button class="primary" onclick="track()">Track Shipment</button></div><div id="trackResult"></div></div>`;return}
+let fields={
+Shipments:[['tracking','Tracking number'],['sender','Sender'],['recipient','Recipient'],['origin','Origin'],['destination','Destination'],['date','Expected delivery date']],
+Inventory:[['item','Item name'],['sku','SKU / code'],['qty','Quantity'],['location','Storage location']],
+Fleet:[['vehicle','Vehicle / registration'],['driver','Driver name'],['phone','Driver phone'],['status','Availability']],
+Customers:[['name','Customer name'],['phone','Phone'],['email','Email'],['address','Address']],
+Finances:[['description','Description'],['amount','Amount (UGX)'],['date','Date']]
+};
+let arr=data[page]||[];
+let form=fields[page]||[];
+m.innerHTML=`<h1>${page}</h1><p class="sub">Manage your ${page.toLowerCase()} records.</p>
+<div class="box"><h2>Add ${page==='Fleet'?'Vehicle':page==='Finances'?'Transaction':page==='Shipments'?'Shipment':page==='Customers'?'Customer':'Inventory Item'}</h2>
+<form onsubmit="addRecord(event,'${page}')"><div class="form">${form.map(([id,label])=>`<input id="f_${id}" placeholder="${label}" ${['tracking','item','vehicle','name','description','qty','amount'].includes(id)?'required':''} ${['qty','amount'].includes(id)?'type="number" min="0" step="any"':''} ${id==='date'?'type="date"':''} ${id==='email'?'type="email"':''}>`).join('')}
+${page==='Shipments'?'<select id="f_status"><option>Pending</option><option>Processing</option><option>In Transit</option><option>Out for Delivery</option><option>Delivered</option><option>Cancelled</option></select>':''}
+${page==='Finances'?'<select id="f_type"><option>Income</option><option>Expense</option></select>':''}</div><button class="primary" type="submit">+ Save Record</button></form></div>
+<div class="box"><h2>Saved Records (${arr.length})</h2><input id="search" placeholder="Search records..." oninput="filterRows('${page}')" style="margin-bottom:12px">${table(page,arr)}</div>`;
+}
+function table(page,arr){
+if(!arr.length)return '<p>No records yet. Add your first record above.</p>';
+let columns=Object.keys(arr[0]).filter(k=>k!=='_id');
+return `<table><thead><tr>${columns.map(k=>`<th>${esc(k)}</th>`).join('')}<th>Action</th></tr></thead><tbody>${arr.map(r=>`<tr>${columns.map(k=>`<td>${k==='status'?`<span class="badge">${esc(r[k])}</span>`:esc(r[k])}</td>`).join('')}<td><button onclick="deleteRecord('${page}','${r._id}')" aria-label="Delete record">Delete</button></td></tr>`).join('')}</tbody></table>`;
+}
+function addRecord(e,page){
+e.preventDefault();
+let obj={_id:Date.now().toString()};
+document.querySelectorAll('[id^="f_"]').forEach(el=>obj[el.id.slice(2)]=el.value.trim());
+if(page==='Shipments'&&!obj.tracking)obj.tracking='CAL-'+Date.now().toString().slice(-6);
+if(page==='Shipments'&&data.Shipments.some(x=>x.tracking===obj.tracking)){alert('That tracking number already exists.');return}
+data[page].push(obj);save(page);showPage(page);alert('Record saved on this device.');
+}
+function deleteRecord(page,id){if(!confirm('Delete this record?'))return;data[page]=data[page].filter(r=>r._id!==id);save(page);showPage(page)}
+function track(){
+let id=document.getElementById('trackingNo').value.trim();
+let r=data.Shipments.find(x=>x.tracking.toLowerCase()===id.toLowerCase());
+document.getElementById('trackResult').innerHTML=r?`<h2>Shipment Found</h2><p><b>Tracking:</b> ${esc(r.tracking)}</p><p><b>Status:</b> ${esc(r.status||'Pending')}</p><p><b>Origin:</b> ${esc(r.origin)}</p><p><b>Destination:</b> ${esc(r.destination)}</p><p><b>Expected delivery:</b> ${esc(r.date)}</p>`:'<p>No matching shipment found.</p>';
+}
+function filterRows(page){
+let q=document.getElementById('search').value.toLowerCase();
+document.querySelectorAll('#main tbody tr').forEach(tr=>tr.style.display=tr.innerText.toLowerCase().includes(q)?'':'none');
+}
+load();showPage('Dashboard',document.querySelector('nav button'));
+</script>
+</body>
+</html>
