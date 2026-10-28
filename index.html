@@ -122,5 +122,21 @@ document.querySelectorAll('#main tbody tr').forEach(tr=>tr.style.display=tr.inne
 }
 load();showPage('Dashboard',document.querySelector('nav button'));
 </script>
+<!-- Crown Avenix Logistics: Supabase Connection -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const SUPABASE_URL = "https://sycyvswdbzanjvbdwvow.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_ibjd7ZN5hPBiCzaQ0fO_yA_IXpFXfgl";
+
+    const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
+    console.log("Crown Avenix Logistics: Supabase client initialized.");
+</script>
 </body>
 </html>
