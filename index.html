@@ -35,6 +35,60 @@ th{background:#f5f6f8}
 .bar label{width:100px;font-size:13px}.track{background:#eceef2;border-radius:8px;flex:1;height:13px;overflow:hidden}.fill{background:var(--gold);height:100%}
 footer{text-align:center;color:#8a9099;padding:20px;font-size:12px}
 @media(max-width:650px){.layout{display:block}nav{width:100%;display:flex;overflow-x:auto;gap:5px}nav button{min-width:max-content;width:auto;padding:12px}main{padding:15px}header{padding:15px}}
+    /* Logistics video background */
+.hero-video {
+position: relative;
+min-height: 300px;
+display: flex;
+align-items: center;
+justify-content: center;
+overflow: hidden;
+border-radius: 12px;
+margin: 16px 0;
+background: #101318;
+color: white;
+text-align: center;
+}
+
+.hero-video video {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+
+.hero-video::after {
+content: "";
+position: absolute;
+inset: 0;
+background: rgba(0, 0, 0, 0.58);
+}
+
+.hero-video-content {
+position: relative;
+z-index: 1;
+padding: 28px 18px;
+}
+
+.hero-video-content h1 {
+font-size: clamp(26px, 5vw, 42px);
+margin: 0 0 12px;
+color: white;
+}
+
+.hero-video-content p {
+font-size: 16px;
+line-height: 1.6;
+max-width: 600px;
+margin: 0 auto;
+}
+
+@media (max-width: 480px) {
+.hero-video {
+min-height: 260px;
+}
+}
 </style>
 </head>
 <body>
@@ -52,6 +106,15 @@ footer{text-align:center;color:#8a9099;padding:20px;font-size:12px}
 <button onclick="showPage('Finances',this)">💰 Finances</button>
 <button onclick="showPage('Tracking',this)">⌕ Track Shipment</button>
 </nav>
+    <section class="hero-video">
+  <video autoplay muted loop playsinline preload="none"
+    poster="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200">
+    <source src="https://videos.pexels.com/video-files/4488735/4488735-hd_1920_1080_25fps.mp4" type="video/mp4">
+  </video>  <div class="hero-video-content">
+    <h1>Moving Business Forward</h1>
+    <p>Reliable logistics, smarter inventory, and efficient cargo movement — connecting your business to new opportunities.</p>
+  </div>
+</section><main id="main"></main>
 <main id="main"></main>
 </div>
 <footer>Crown Avenix Logistics · Moving Business Forward</footer>
